@@ -1,32 +1,35 @@
 #!/bin/bash
 
 STORE_CREDENTIALS(){
-	echo "Please enter your credentials for sudo"
-	echo "This will be removed once complete"
+	echo "---REQUESTING CREDENTIALS---"
 	echo -n Password:
 	read -s PASSWORD
 	echo $PASSWORD > ~/.password
 	chmod 400 ~/.password
 }
 CLEANUP(){
+	echo "---CLEANING UP---"
 	rm -f ~/.password
 }
 RUN_AS() {
 	cat ~/.password | sudo -s 
 }
 UPDATE() {
-		cat ~/.password | sudo -s apt update -y
+	echo  "---UPDATING---"
+	cat ~/.password | sudo -s apt update -y
 }
 INSTALL_REQUIREMENTS() {
-		cat ~/.password | sudo -s apt-get install -y \
-		ca-certificates \
-		curl \
-		gnupg \
-		lsb-release \
-		sed \
-		socat
+	echo "---INSTALLING REQUIREMENTS---"
+	cat ~/.password | sudo -s apt-get install -y \
+	ca-certificates \
+	curl \
+	gnupg \
+	lsb-release \
+	sed \
+	socat
 }
 ADD_DOCKER_REPO() {
+	echo "---ADDING DOCKER REPO---"
 	curl -fsSL https://download.docker.com/linux/debian/gpg | sudo gpg --dearmor -o /usr/share/keyrings/docker-archive-keyring.gpg
 	
 	echo \
@@ -34,9 +37,11 @@ ADD_DOCKER_REPO() {
 	  $(lsb_release -cs) stable" | sudo tee /etc/apt/sources.list.d/docker.list > /dev/null
 }
 CORRECT_REPO() {
+	echo "---CORRECTING ARCH BUG---"
 	cat ~/.password | sudo -s sed -i 's/debian/ubuntu/g' /etc/apt/sources.list.d/docker.list
 }
 INSTALL_DOCKER() {
+	echo "---INSTALLING DOCKER---"
 	cat ~/.password | sudo -s apt update -y
 	cat ~/.password | sudo -s apt install -y \
 	docker-ce \
@@ -48,20 +53,33 @@ INSTALL_DOCKER() {
 	cat ~/.password | sudo -s /usr/local/bin/docker-compose
 }
 START_DOCKER_ON_BOOT() {
+	echo "---SETTING DOCKER TO START ON BOOT---"
 	cat ~/.password | sudo -s systemctl start docker
 	cat ~/.password | sudo -s systemctl enable docker.service
 	cat ~/.password | sudo -s systemctl enable containerd.service
 }
 BUILD_CRAPI() {
+	echo "---BUILDING CONTAINERS---"
 	cat ~/.password | sudo -s deploy/docker/build-all.sh
 }
+CRAPI_SCRIPT(){
+	echo "---CREATING  STARUP SCRIPT---"
+	cat ~/.password | sudo -s echo "#!/bin/bash" > /usr/local/bin/start_crapi
+	cat ~/.password | sudo -s echo "/usr/local/bin/docker-compose -f /root/crAPI/deploy/docker/docker-compose.yml --compatibility up -d" >> /usr/local/bin/start_crapi
+	cat ~/.password | sudo -s chmot  a+x /usr/local/bin/start_crapi
+}
 SETUP_CRONJOB() {
+	echo "---UPDATING CRON---"
 	sudo su -
 	crontab -l > mycron
 	echo "@reboot socat tcp-listen:80,reuseaddr,fork tcp:localhost:8888 &" >> mycron
 	echo "@reboot socat tcp-listen:18025,reuseaddr,fork tcp:localhost:8025 &" >> mycron
 	echo "@reboot /usr/local/bin/start_crapi" >> mycron
 	crontab mycron
+}
+REBOOT() {
+	echo "---SCHEDULING REBOOT---"
+	cat ~/.password | sudo shutdown -r
 }
 
 STORE_CREDENTIALS
@@ -73,4 +91,7 @@ INSTALL_DOCKER
 START_DOCKER_ON_BOOT
 BUILD_CRAPI
 SETUP_CRONJOB
+CRAPI_SCRIPT
+REBOOT
 CLEANUP
+
