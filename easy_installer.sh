@@ -31,7 +31,6 @@ INSTALL_REQUIREMENTS() {
 ADD_DOCKER_REPO() {
 	echo "---ADDING DOCKER REPO---"
 	curl -fsSL https://download.docker.com/linux/debian/gpg | sudo gpg --dearmor -o /usr/share/keyrings/docker-archive-keyring.gpg
-	
 	echo \
 	  "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/docker-archive-keyring.gpg] https://download.docker.com/linux/debian \
 	  $(lsb_release -cs) stable" | sudo tee /etc/apt/sources.list.d/docker.list > /dev/null
@@ -64,10 +63,9 @@ BUILD_CRAPI() {
 }
 CRAPI_SCRIPT(){
 	echo "---CREATING  STARUP SCRIPT---"
-	cat ~/.password | sudo -s cat << EOF >>/usr/local/bin/start_crapi
-	#!/bin/bash
-	/usr/local/bin/docker-compose -f /root/crAPI/deploy/docker/docker-compose.yml --compatibility up -d
-	EOF
+	REPLACEMENT=pwd
+	sed -i "s/REPLACE/$REPLACEMENT/g" parked
+	cat ~/.password | sudo -s mv parked /usr/local/bin/start_crapi
 	cat ~/.password | sudo -s chmod  a+x /usr/local/bin/start_crapi
 }
 SETUP_CRONJOB() {
