@@ -64,9 +64,11 @@ BUILD_CRAPI() {
 }
 CRAPI_SCRIPT(){
 	echo "---CREATING  STARUP SCRIPT---"
-	cat ~/.password | sudo -s echo "#!/bin/bash" > /usr/local/bin/start_crapi
-	cat ~/.password | sudo -s echo "/usr/local/bin/docker-compose -f /root/crAPI/deploy/docker/docker-compose.yml --compatibility up -d" >> /usr/local/bin/start_crapi
-	cat ~/.password | sudo -s chmot  a+x /usr/local/bin/start_crapi
+	cat ~/.password | sudo -s cat >/usr/local/bin/start_crapi <<EOL
+	#!/bin/bash
+	/usr/local/bin/docker-compose -f /root/crAPI/deploy/docker/docker-compose.yml --compatibility up -d
+	EOL
+	cat ~/.password | sudo -s chmod  a+x /usr/local/bin/start_crapi
 }
 SETUP_CRONJOB() {
 	echo "---UPDATING CRON---"
@@ -79,7 +81,7 @@ SETUP_CRONJOB() {
 }
 REBOOT() {
 	echo "---SCHEDULING REBOOT---"
-	cat ~/.password | sudo shutdown -r
+	shutdown -r +3
 }
 
 STORE_CREDENTIALS
@@ -90,8 +92,7 @@ CORRECT_REPO
 INSTALL_DOCKER
 START_DOCKER_ON_BOOT
 BUILD_CRAPI
-SETUP_CRONJOB
 CRAPI_SCRIPT
-REBOOT
 CLEANUP
-
+REBOOT
+SETUP_CRONJOB
