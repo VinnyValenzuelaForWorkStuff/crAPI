@@ -18,7 +18,7 @@ UPDATE() {
 		cat ~/.password | sudo -s apt update -y
 }
 INSTALL_REQUIREMENTS() {
-		cat ~/.password | sudo -s  apt-get install -y \
+		cat ~/.password | sudo -s apt-get install -y \
 		ca-certificates \
 		curl \
 		gnupg \
@@ -34,28 +34,26 @@ ADD_DOCKER_REPO() {
 	  $(lsb_release -cs) stable" | sudo tee /etc/apt/sources.list.d/docker.list > /dev/null
 }
 CORRECT_REPO() {
-	sed 's+deb [arch=amd64 signed-by=/usr/share/keyrings/docker-archive-keyring.gpg] https://download.docker.com/linux/debian   bionic stable+deb [arch=amd64 signed-by=/usr/share/keyrings/docker-archive-keyring.gpg] https://download.docker.com/linux/ubuntu   bionic stable+g'
+	sed -i 's/debian/ubuntu/g'
 }
 INSTALL_DOCKER() {
-	cat ~/.password | sudo -s  apt update -y
-	cat ~/.password | sudo -s  apt install \
+	cat ~/.password | sudo -s apt update -y
+	cat ~/.password | sudo -s apt install -y \
 	docker-ce \
 	docker-ce-cli \
 	containerd.io \
 	docker-compose-plugin
-	cat ~/.password | sudo -s  curl -SL https://github.com/docker/compose/releases/download/v2.4.1/docker-compose-linux-x86_64 -o /usr/local/bin/docker-compose
-	cat ~/.password | sudo -s  chmod +x /usr/local/bin/docker-compose
-	cat ~/.password | sudo -s  /usr/local/bin/docker-compose
+	cat ~/.password | sudo -s curl -SL https://github.com/docker/compose/releases/download/v2.4.1/docker-compose-linux-x86_64 -o /usr/local/bin/docker-compose
+	cat ~/.password | sudo -s chmod +x /usr/local/bin/docker-compose
+	cat ~/.password | sudo -s /usr/local/bin/docker-compose
 }
 START_DOCKER_ON_BOOT() {
-	cat ~/.password | sudo -s  systemctl start docker
-	cat ~/.password | sudo -s  systemctl enable docker.service
-	cat ~/.password | sudo -s  systemctl enable containerd.service
+	cat ~/.password | sudo -s systemctl start docker
+	cat ~/.password | sudo -s systemctl enable docker.service
+	cat ~/.password | sudo -s systemctl enable containerd.service
 }
 BUILD_CRAPI() {
-	git clone https://github.com/VinnyValenzuelaForWorkStuff/crAPI.git
-	cd crAPI
-	cat ~/.password | sudo -s  deploy/docker/build-all.sh
+	cat ~/.password | sudo -s deploy/docker/build-all.sh
 }
 SETUP_CRONJOB() {
 	sudo su -
