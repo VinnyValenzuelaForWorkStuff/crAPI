@@ -70,12 +70,11 @@ CRAPI_SCRIPT(){
 }
 SETUP_CRONJOB() {
 	echo "---UPDATING CRON---"
-	sudo su -
-	crontab -l > mycron
-	echo "@reboot socat tcp-listen:80,reuseaddr,fork tcp:localhost:8888 &" >> mycron
-	echo "@reboot socat tcp-listen:18025,reuseaddr,fork tcp:localhost:8025 &" >> mycron
-	echo "@reboot /usr/local/bin/start_crapi" >> mycron
-	crontab mycron
+	cat ~/.password | sudo -s crontab -l > mycron
+	cat ~/.password | sudo -s echo "@reboot socat tcp-listen:80,reuseaddr,fork tcp:localhost:8888 &" >> mycron
+	cat ~/.password | sudo -s echo "@reboot socat tcp-listen:18025,reuseaddr,fork tcp:localhost:8025 &" >> mycron
+	cat ~/.password | sudo -s echo "@reboot /usr/local/bin/start_crapi" >> mycron
+	cat ~/.password | sudo -s crontab mycron
 }
 REBOOT() {
 	echo "---SCHEDULING REBOOT---"
