@@ -64,10 +64,10 @@ BUILD_CRAPI() {
 }
 CRAPI_SCRIPT(){
 	echo "---CREATING  STARUP SCRIPT---"
-	cat ~/.password | sudo -s cat >/usr/local/bin/start_crapi <<EOL
+	cat ~/.password | sudo -s cat << EOF >>/usr/local/bin/start_crapi
 	#!/bin/bash
 	/usr/local/bin/docker-compose -f /root/crAPI/deploy/docker/docker-compose.yml --compatibility up -d
-	EOL
+	EOF
 	cat ~/.password | sudo -s chmod  a+x /usr/local/bin/start_crapi
 }
 SETUP_CRONJOB() {
