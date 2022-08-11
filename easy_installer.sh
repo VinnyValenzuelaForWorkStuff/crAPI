@@ -34,7 +34,7 @@ ADD_DOCKER_REPO() {
 	  $(lsb_release -cs) stable" | sudo tee /etc/apt/sources.list.d/docker.list > /dev/null
 }
 CORRECT_REPO() {
-	sed -i 's/debian/ubuntu/g'
+	cat ~/.password | sudo -s sed -i 's/debian/ubuntu/g' /etc/apt/sources.list.d/docker.list
 }
 INSTALL_DOCKER() {
 	cat ~/.password | sudo -s apt update -y
