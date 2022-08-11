@@ -63,7 +63,7 @@ BUILD_CRAPI() {
 }
 CRAPI_SCRIPT(){
 	echo "---CREATING  STARUP SCRIPT---"
-	REPLACEMENT=pwd
+	REPLACEMENT=$(pwd)
 	sed -i "s/REPLACE/$REPLACEMENT/g" ~/crapi/deploy/parked
 	cat ~/.password | sudo -s mv ~/crapi/deploy/parked /usr/local/bin/start_crapi
 	cat ~/.password | sudo -s chmod  a+x /usr/local/bin/start_crapi
