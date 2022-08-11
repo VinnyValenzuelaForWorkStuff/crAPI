@@ -8,7 +8,9 @@ STORE_CREDENTIALS(){
 	echo $PASSWORD > ~/.password
 	chmod 400 ~/.password
 }
-
+CLEANUP(){
+	rm -f ~/.password
+}
 RUN_AS() {
 	cat ~/.password | sudo -s 
 }
@@ -64,6 +66,7 @@ SETUP_CRONJOB() {
 	crontab mycron
 }
 
+STORE_CREDENTIALS
 UPDATE
 INSTALL_REQUIREMENTS
 ADD_DOCKER_REPO
@@ -72,3 +75,4 @@ INSTALL_DOCKER
 START_DOCKER_ON_BOOT
 BUILD_CRAPI
 SETUP_CRONJOB
+CLEANUP
